@@ -46,12 +46,21 @@ public class AnimationManager {
     }
 
     private final List<Animation> animations = new ArrayList<>();
+    private final EventManager eventManager;
     private final Timer timer;
     private long lastUpdate;
+    private float currentTotalTime = 0;
 
+    // Default constructor
     public AnimationManager() {
+        this(16); // Default update interval of 16 milliseconds (approx 60 FPS)
+    }
+
+    // Constructor with custom update interval
+    public AnimationManager(int updateInterval) {
+        this.eventManager = new EventManager();
         lastUpdate = System.nanoTime();
-        timer = new Timer(16, e -> update());
+        timer = new Timer(updateInterval, e -> update());
         timer.start();
     }
 
@@ -63,6 +72,7 @@ public class AnimationManager {
         long now = System.nanoTime();
         float delta = (now - lastUpdate) / 1_000_000_000.0f;
         lastUpdate = now;
+        currentTotalTime += delta;
 
         for (int i = animations.size() - 1; i >= 0; i--) {
             Animation anim = animations.get(i);
@@ -72,6 +82,7 @@ public class AnimationManager {
                 anim.update(delta);
             }
         }
+        eventManager.update(currentTotalTime);
     }
 
     public void animateMove(JComponent target, float toX, float toY, float duration, Easing easing) {
@@ -94,6 +105,10 @@ public class AnimationManager {
     public void animateRotation(JComponent target, float toRotation, float duration, Easing easing) {
         throw new UnsupportedOperationException("Rotation is not supported on standard JComponents. " +
                 "The component must implement custom painting with Graphics2D.rotate().");
+    }
+
+    public EventManager getEventManager() {
+        return eventManager;
     }
 
     private static class Animation {
