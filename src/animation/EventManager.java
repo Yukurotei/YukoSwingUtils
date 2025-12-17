@@ -11,7 +11,7 @@ public class EventManager {
     private final ConcurrentLinkedQueue<Event> events = new ConcurrentLinkedQueue<>();
     /**
      * Add an event to the manager
-     * @param event - the event
+     * @param event - The event
      * @since 1.0.0
      * @author Yukurotei
      */
