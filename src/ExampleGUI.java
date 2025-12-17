@@ -35,10 +35,8 @@ public class ExampleGUI extends JFrame {
         animatedPanel = new AnimatedPanel();
         animatedPanel.setBounds(400, 200, 150, 100);
         panel.add(animatedPanel);
-        SwingUtilities.invokeLater(() -> {
-            Shader shader = new Shader(panel);
+            Shader shader = new Shader(this);
             shader.setColorFilter(new Color(255, 0, 0, 100));
-        });
 
 
 
