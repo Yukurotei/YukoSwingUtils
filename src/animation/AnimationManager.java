@@ -7,8 +7,19 @@ import java.awt.Dimension;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * The animation manager
+ * @since 1.0.0
+ * @author Yukurotei
+ */
 public class AnimationManager {
 
+    /**
+     * The different types of easings
+     * @since 1.0.0
+     * @author Yukurotei
+     * @see https://easings.net
+     */
     public enum Easing {
         LINEAR,
         EASE_IN_QUAD,
@@ -54,18 +65,41 @@ public class AnimationManager {
     private float currentTotalTime = 0;
 
     // Default constructor
+    /**
+     * Creates an animation manager that updates every 16ms (aprox 60fps)
+     * @since 1.0.0
+     * @author Yukurotei
+     */
     public AnimationManager() {
         this(16); // Default update interval of 16 milliseconds (approx 60 FPS)
     }
 
     // Constructor with custom update interval
+    /**
+     * Creates an animation manager that updates at the rate that is specified
+     * @param updateInterval - the rate in ms at which the manager updates (shorter = smoother BUT = more resources used)
+     * @since 1.0.0
+     * @author Yukurotei
+     */
     public AnimationManager(int updateInterval) {
         this.eventManager = new EventManager();
         lastUpdate = System.nanoTime();
         timer = new Timer(updateInterval, e -> update());
         timer.start();
     }
-
+    /**
+     * Restarts the animation manager
+     * @since 1.0.0
+     * @author MEME-KING16
+     */
+    public void start() {
+        timer.start();
+    }
+    /**
+     * Stops the animation manager
+     * @since 1.0.0
+     * @author Yukurotei
+     */
     public void stop() {
         timer.stop();
     }
@@ -87,12 +121,31 @@ public class AnimationManager {
         eventManager.update(currentTotalTime);
     }
 
+    /**
+     * Move a JComponent with an easing
+     * @param target - The JComponent
+     * @param toX - The new x
+     * @param toY - The new y
+     * @param duration - The duration of the animation (in seconds)
+     * @param easing - The easing
+     * @since 1.0.0
+     * @author Yukurotei
+     */
     public void animateMove(JComponent target, float toX, float toY, float duration, Easing easing) {
         Animation anim = new Animation();
         anim.initMove(target, toX, toY, duration, easing);
         animations.add(anim);
     }
 
+    /**
+     * Fade an AnimatedJComponent with an easing
+     * @param target - The AnimatedJComponent
+     * @param toOpacity - The new opacity (0-1)
+     * @param duration - The duration of the animation (in seconds)
+     * @param easing - The easing
+     * @since 1.0.0
+     * @author Yukurotei
+     */
     public void animateFade(JComponent target, float toOpacity, float duration, Easing easing) {
         //Implemented with AlphaComposite
         if (!(target instanceof AnimatedJComponent)) {
@@ -103,12 +156,31 @@ public class AnimationManager {
         animations.add(anim);
     }
 
+    /**
+     * Change the scale of a JComponent with an easing
+     * @param target - The JComponent
+     * @param toScaleX - The new x scale
+     * @param toScaleY - The new y scale
+     * @param duration - The duration of the animation (in seconds)
+     * @param easing - The easing
+     * @since 1.0.0
+     * @author Yukurotei
+     */
     public void animateScale(JComponent target, float toScaleX, float toScaleY, float duration, Easing easing) {
         Animation anim = new Animation();
         anim.initScale(target, toScaleX, toScaleY, duration, easing);
         animations.add(anim);
     }
 
+    /**
+     * Roatate the AnimatedJComponent with an easing
+     * @param target - The AnimatedJComponent
+     * @param toRotationDegrees - The amount of degrees to rotate 
+     * @param duration - The duration of the animation (in seconds)
+     * @param easing - The easing
+     * @since 1.0.0
+     * @author Yukurotei
+     */
     public void animateRotation(JComponent target, float toRotationDegrees, float duration, Easing easing) {
         //Graphics2D.rotate(), manual paint
         if (!(target instanceof AnimatedJComponent)) {
@@ -119,6 +191,12 @@ public class AnimationManager {
         animations.add(anim);
     }
 
+    /**
+     * Get the Event Manager
+     * @return EventManager
+     * @since 1.0.0
+     * @author Yukurotei
+     */
     public EventManager getEventManager() {
         return eventManager;
     }

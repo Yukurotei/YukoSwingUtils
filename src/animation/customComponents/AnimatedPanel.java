@@ -7,6 +7,11 @@ import java.awt.AlphaComposite;
 import java.awt.Color;
 import java.awt.RenderingHints;
 
+/**
+ * Special type of panel that has opacity and rotation
+ * @since 1.0.0
+ * @author Yukurotei
+ */
 public class AnimatedPanel extends JPanel implements AnimatedJComponent {
 
     public AnimatedPanel() {} //Just used as a 'marker' to mark components needed for manual rendering

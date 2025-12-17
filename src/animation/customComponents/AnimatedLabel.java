@@ -6,6 +6,11 @@ import java.awt.Graphics2D;
 import java.awt.AlphaComposite;
 import java.awt.RenderingHints;
 
+/**
+ * Special type of label that has opacity and rotation
+ * @since 1.0.0
+ * @author Yukurotei
+ */
 public class AnimatedLabel extends JLabel implements AnimatedJComponent {
 
     public AnimatedLabel(String text) {

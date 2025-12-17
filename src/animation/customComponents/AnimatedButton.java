@@ -6,6 +6,11 @@ import java.awt.Graphics2D;
 import java.awt.AlphaComposite;
 import java.awt.RenderingHints;
 
+/**
+ * Special type of button that has opacity and rotation
+ * @since 1.0.0
+ * @author Yukurotei
+ */
 public class AnimatedButton extends JButton implements AnimatedJComponent {
 
     public AnimatedButton(String text) {
