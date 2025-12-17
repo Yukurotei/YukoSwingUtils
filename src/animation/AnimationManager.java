@@ -6,6 +6,7 @@ import javax.swing.*;
 import java.awt.Dimension;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ConcurrentLinkedQueue;
 
 /**
  * The animation manager
@@ -58,7 +59,7 @@ public class AnimationManager {
         EASE_OSCILLATE_INFINITE
     }
 
-    private final List<Animation> animations = new ArrayList<>();
+    private final ConcurrentLinkedQueue<Animation> animations = new ConcurrentLinkedQueue<>();
     private final EventManager eventManager;
     private final Timer timer;
     private long lastUpdate;
@@ -110,10 +111,11 @@ public class AnimationManager {
         lastUpdate = now;
         currentTotalTime += delta;
 
-        for (int i = animations.size() - 1; i >= 0; i--) {
-            Animation anim = animations.get(i);
+        List<Animation> currentAnimations = new ArrayList<>(animations);
+
+        for (Animation anim : currentAnimations) {
             if (anim.isFinished()) {
-                animations.remove(i);
+                animations.remove(anim);
             } else {
                 anim.update(delta);
             }

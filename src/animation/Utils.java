@@ -1,3 +1,5 @@
+package animation;
+
 import javax.swing.JComponent;
 import java.awt.Graphics2D;
 import java.awt.Image;
