@@ -175,7 +175,7 @@ public class AnimationManager {
     }
 
     /**
-     * Roatate the AnimatedJComponent with an easing
+     * Rotate the AnimatedJComponent with an easing
      * @param target - The AnimatedJComponent
      * @param toRotationDegrees - The amount of degrees to rotate 
      * @param duration - The duration of the animation (in seconds)
