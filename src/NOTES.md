@@ -1,0 +1,1 @@
+# Everything in the /animation folder is the library, ExampleGUI, Main, and assets are just demonstrations. You can just copy paste the animation folder to your project and use it
