@@ -19,7 +19,7 @@ public class AnimationManager {
      * The different types of easing
      * @since 1.0.0
      * @author Yukurotei
-     * @see <a href="https://easings.net">...</a>
+     * @see <a href="https://easings.net">easings</a>
      */
     public enum Easing {
         LINEAR,
