@@ -50,7 +50,10 @@ public class ExampleGUI extends JFrame {
         animationManager.getEventManager().addEvent(new Event(0.5f, () -> animationManager.animateFade(animatedPanel, 0.0f, 1.5f, AnimationManager.Easing.EASE_IN_SINE)));
         animationManager.getEventManager().addEvent(new Event(2.5f, () -> animationManager.animateFade(animatedPanel, 1.0f, 1.5f, AnimationManager.Easing.EASE_OUT_SINE)));
         animationManager.getEventManager().addEvent(new Event(0.5f, () -> animationManager.animateRotation(animatedPanel, 360f, 4f, AnimationManager.Easing.EASE_IN_OUT_CUBIC)));
-        animationManager.getEventManager().addEvent(new Event(3f, () -> animationManager.animateScale(animatedPanel, animatedPanel.getWidth() + 2, animatedPanel.getHeight() + 2, 3f, AnimationManager.Easing.EASE_IN_OUT_EXPO)));
+        // Example of scaling: Make the panel grow and then shrink back.
+        // The scale parameter is a factor (e.g., 1.2 is 120%).
+        animationManager.getEventManager().addEvent(new Event(3f, () -> animationManager.animateScale(animatedPanel, 5f, 5f, 1f, AnimationManager.Easing.EASE_OUT_QUAD)));
+        animationManager.getEventManager().addEvent(new Event(5f, () -> animationManager.animateScale(animatedPanel, 0.2f, 0.2f, 1f, AnimationManager.Easing.EASE_IN_QUAD)));
 
 
         // Add events to the EventManager
@@ -64,9 +67,9 @@ public class ExampleGUI extends JFrame {
             System.out.println("Event 2 triggered at 3.5 seconds!");
         }));
 
-        animationManager.getEventManager().addEvent(new Event(5.0f, () -> {
+        animationManager.getEventManager().addEvent(new Event(7.0f, () -> {
             button.setText("Animation and Events done!");
-            System.out.println("All animations and events finished at 5.0 seconds!");
+            System.out.println("All animations and events finished at 7.0 seconds!");
             animationManager.stop(); // Stop the animation manager
         }));
     }

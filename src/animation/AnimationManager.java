@@ -161,16 +161,16 @@ public class AnimationManager {
     /**
      * Change the scale of a JComponent with an easing
      * @param target - The JComponent
-     * @param toScaleX - The new x scale
-     * @param toScaleY - The new y scale
+     * @param toScaleXPercentage - The new x scale in DECIMAL PERCENTAGE (1 is 100%, 0.1 is 10%, so on)
+     * @param toScaleYPercentage - The new y scale in DECIMAL PERCENTAGE (1 is 100%, 0.1 is 10%, so on)
      * @param duration - The duration of the animation (in seconds)
      * @param easing - The easing
      * @since 1.0.0
      * @author Yukurotei
      */
-    public void animateScale(JComponent target, float toScaleX, float toScaleY, float duration, Easing easing) {
+    public void animateScale(JComponent target, float toScaleXPercentage, float toScaleYPercentage, float duration, Easing easing) {
         Animation anim = new Animation();
-        anim.initScale(target, toScaleX, toScaleY, duration, easing);
+        anim.initScale(target, toScaleXPercentage, toScaleYPercentage, duration, easing);
         animations.add(anim);
     }
 
