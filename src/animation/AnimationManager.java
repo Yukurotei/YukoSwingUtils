@@ -16,10 +16,10 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 public class AnimationManager {
 
     /**
-     * The different types of easings
+     * The different types of easing
      * @since 1.0.0
      * @author Yukurotei
-     * @see https://easings.net
+     * @see <a href="https://easings.net">...</a>
      */
     public enum Easing {
         LINEAR,
@@ -177,7 +177,7 @@ public class AnimationManager {
     /**
      * Roatate the AnimatedJComponent with an easing
      * @param target - The AnimatedJComponent
-     * @param toRotationDegrees - The amount of degrees to rotate 
+     * @param toRotationDegrees - The amount of degrees to rotate
      * @param duration - The duration of the animation (in seconds)
      * @param easing - The easing
      * @since 1.0.0
