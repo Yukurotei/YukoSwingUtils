@@ -78,7 +78,7 @@ public class AnimationManager {
     // Constructor with custom update interval
     /**
      * Creates an animation manager that updates at the rate that is specified
-     * @param updateInterval - the rate in ms at which the manager updates (shorter = smoother BUT = more resources used)
+     * @param updateInterval - The rate in ms at which the manager updates (shorter = smoother BUT = more resources used)
      * @since 1.0.0
      * @author Yukurotei
      */
