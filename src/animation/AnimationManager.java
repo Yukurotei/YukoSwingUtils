@@ -1,5 +1,7 @@
 package animation;
 
+import animation.customComponents.AnimatedJComponent;
+
 import javax.swing.*;
 import java.awt.Dimension;
 import java.util.ArrayList;
@@ -92,8 +94,13 @@ public class AnimationManager {
     }
 
     public void animateFade(JComponent target, float toOpacity, float duration, Easing easing) {
-        throw new UnsupportedOperationException("Fading is not supported on standard JComponents. " +
-                "The component must implement custom painting with AlphaComposite.");
+        //Implemented with AlphaComposite
+        if (!(target instanceof AnimatedJComponent)) {
+            throw new IllegalArgumentException("target must be instance of AnimatedJComponent");
+        }
+        Animation anim = new Animation();
+        anim.initFade(target, toOpacity, duration, easing);
+        animations.add(anim);
     }
 
     public void animateScale(JComponent target, float toScaleX, float toScaleY, float duration, Easing easing) {
@@ -102,9 +109,14 @@ public class AnimationManager {
         animations.add(anim);
     }
 
-    public void animateRotation(JComponent target, float toRotation, float duration, Easing easing) {
-        throw new UnsupportedOperationException("Rotation is not supported on standard JComponents. " +
-                "The component must implement custom painting with Graphics2D.rotate().");
+    public void animateRotation(JComponent target, float toRotationDegrees, float duration, Easing easing) {
+        //Graphics2D.rotate(), manual paint
+        if (!(target instanceof AnimatedJComponent)) {
+            throw new IllegalArgumentException("target must be instance of AnimatedJComponent");
+        }
+        Animation anim = new Animation();
+        anim.initRotation(target, toRotationDegrees, duration, easing);
+        animations.add(anim);
     }
 
     public EventManager getEventManager() {
@@ -117,13 +129,21 @@ public class AnimationManager {
         private float duration;
         private float time;
 
-        // Position
+        //Position
         private float startX, startY;
         private float toX, toY;
 
-        // Scale
+        //Scale
         private Dimension startSize;
         private float toScaleX, toScaleY;
+
+        //Opacity
+        private float startOpacity;
+        private float toOpacity;
+
+        //Rotation
+        private float startRotation;
+        private float toRotation;
 
 
         public void initMove(JComponent target, float toX, float toY, float duration, Easing easing) {
@@ -139,6 +159,8 @@ public class AnimationManager {
 
             this.toScaleX = Float.NaN;
             this.toScaleY = Float.NaN;
+            this.toOpacity = Float.NaN;
+            this.toRotation = Float.NaN;
         }
 
         public void initScale(JComponent target, float toScaleX, float toScaleY, float duration, Easing easing) {
@@ -147,12 +169,50 @@ public class AnimationManager {
             this.easing = easing;
             this.time = 0;
 
+            this.startX = target.getX();
+            this.startY = target.getY();
             this.startSize = target.getSize();
             this.toScaleX = toScaleX;
             this.toScaleY = toScaleY;
 
             this.toX = Float.NaN;
             this.toY = Float.NaN;
+            this.toOpacity = Float.NaN;
+            this.toRotation = Float.NaN;
+        }
+
+        public void initFade(JComponent target, float toOpacity, float duration, Easing easing) {
+            this.target = target;
+            this.duration = duration;
+            this.easing = easing;
+            this.time = 0;
+
+            Object prop = target.getClientProperty("animation.opacity");
+            this.startOpacity = (prop instanceof Float) ? (Float) prop : 1f;
+            this.toOpacity = toOpacity;
+
+            this.toX = Float.NaN;
+            this.toY = Float.NaN;
+            this.toScaleX = Float.NaN;
+            this.toScaleY = Float.NaN;
+            this.toRotation = Float.NaN;
+        }
+
+        public void initRotation(JComponent target, float toRotationDegrees, float duration, Easing easing) {
+            this.target = target;
+            this.duration = duration;
+            this.easing = easing;
+            this.time = 0;
+
+            Object prop = target.getClientProperty("animation.rotation");
+            this.startRotation = (prop instanceof Float) ? (Float) prop : 0f;
+            this.toRotation = (float) Math.toRadians(toRotationDegrees);
+
+            this.toX = Float.NaN;
+            this.toY = Float.NaN;
+            this.toScaleX = Float.NaN;
+            this.toScaleY = Float.NaN;
+            this.toOpacity = Float.NaN;
         }
 
         public void update(float delta) {
@@ -171,15 +231,37 @@ public class AnimationManager {
                 target.setLocation(target.getX(), (int) newY);
             }
 
-            if (!Float.isNaN(toScaleX)) {
-                 int newWidth = (int) (startSize.width * (1.0f + (toScaleX - 1.0f) * easedProgress));
-                 target.setSize(newWidth, target.getHeight());
-            }
-            if (!Float.isNaN(toScaleY)) {
-                 int newHeight = (int) (startSize.height * (1.0f + (toScaleY - 1.0f) * easedProgress));
-                 target.setSize(target.getWidth(), newHeight);
+            if (!Float.isNaN(toScaleX) || !Float.isNaN(toScaleY)) {
+                float currentScaleX = 1.0f;
+                if (!Float.isNaN(toScaleX)) {
+                    currentScaleX = 1.0f + (toScaleX - 1.0f) * easedProgress;
+                }
+                int newWidth = (int) (startSize.width * currentScaleX);
+
+                float currentScaleY = 1.0f;
+                if (!Float.isNaN(toScaleY)) {
+                    currentScaleY = 1.0f + (toScaleY - 1.0f) * easedProgress;
+                }
+                int newHeight = (int) (startSize.height * currentScaleY);
+
+                //adjust position to keep the component centered
+                int newX = (int) (startX + (startSize.width - newWidth) / 2.0f);
+                int newY = (int) (startY + (startSize.height - newHeight) / 2.0f);
+
+                target.setBounds(newX, newY, newWidth, newHeight);
             }
 
+            if (!Float.isNaN(toOpacity)) {
+                float newOpacity = startOpacity + (toOpacity - startOpacity) * easedProgress;
+                target.putClientProperty("animation.opacity", newOpacity);
+                target.repaint();
+            }
+
+            if (!Float.isNaN(toRotation)) {
+                float newRotation = startRotation + (toRotation - startRotation) * easedProgress;
+                target.putClientProperty("animation.rotation", newRotation);
+                target.repaint();
+            }
 
             if (progress >= 1f) {
                 time = duration;
