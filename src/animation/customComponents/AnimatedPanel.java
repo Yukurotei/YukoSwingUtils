@@ -22,12 +22,9 @@ public class AnimatedPanel extends JPanel implements AnimatedJComponent {
 
     @Override
     protected void paintComponent(Graphics g) {
-        // Do not call super.paintComponent() to take full control of rendering.
-        // The isOpaque() override also helps prevent the default background fill.
         Graphics2D g2d = AnimatedJComponent.getAnimatedGraphics(this, g);
 
-        // Use the component's paintColor and fill its entire bounds.
-        // The rotation and alpha transforms from getAnimatedGraphics will be applied.
+        g2d.setClip(null);
         g2d.setColor(this.paintColor);
         g2d.fillRect(0, 0, getWidth(), getHeight());
 

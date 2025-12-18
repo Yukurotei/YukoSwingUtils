@@ -34,7 +34,56 @@ public class ExampleGUI extends JFrame {
          * Zero is basically "run as fast as you can"
          */
 
-        if (type == 69420) {
+        if (type != 69420) {
+            button = new JButton("Click me!");
+            button.setBounds(50, 50, 100, 30);
+            panel.add(button);
+
+            animatedPanel = new AnimatedPanel(Color.BLUE);
+            animatedPanel.setBounds(400, 200, 150, 100);
+            panel.add(animatedPanel);
+
+            // Animate the button after a delay
+            animationManager.getEventManager().addEvent(new Event(1f, () -> {
+                animationManager.animateMove(button, 250, 100, 2, AnimationManager.Easing.EASE_IN_OUT_CUBIC);
+            }));
+            /**
+             * This sets a function that triggers after triggerTime SECONDS (triggertime is a float, measured in seconds)
+             * eventManager automatically initializes WITH animationManager
+             */
+
+            // Animate the custom panel
+            animationManager.getEventManager().addEvent(new Event(0.5f, () -> animationManager.animateFade(animatedPanel, 0.0f, 1.5f, AnimationManager.Easing.EASE_IN_SINE)));
+            animationManager.getEventManager().addEvent(new Event(2.5f, () -> animationManager.animateFade(animatedPanel, 1.0f, 1.5f, AnimationManager.Easing.EASE_OUT_SINE)));
+            animationManager.getEventManager().addEvent(new Event(0.5f, () -> animationManager.animateRotation(animatedPanel, 360f, 4f, AnimationManager.Easing.EASE_IN_OUT_CUBIC)));
+            // Example of scaling: Make the panel grow and then shrink back.
+            // The scale parameter is a factor (e.g., 1.2 is 120%).
+            animationManager.getEventManager().addEvent(new Event(4f, () -> animationManager.animateScale(animatedPanel, 5f, 5f, 1f, AnimationManager.Easing.EASE_OUT_QUAD)));
+            animationManager.getEventManager().addEvent(new Event(5f, () -> animationManager.animateScale(animatedPanel, 0.2f, 0.2f, 1f, AnimationManager.Easing.EASE_IN_QUAD)));
+
+
+            // Add events to the EventManager
+            animationManager.getEventManager().addEvent(new Event(1.5f, () -> {
+                button.setText("Event 1 triggered!");
+                System.out.println("Event 1 triggered at 1.5 seconds!");
+            }));
+
+            animationManager.getEventManager().addEvent(new Event(3.5f, () -> {
+                button.setText("Event 2 triggered!");
+                System.out.println("Event 2 triggered at 3.5 seconds!");
+            }));
+
+            animationManager.getEventManager().addEvent(new Event(7.0f, () -> {
+                button.setText("Animation and Events done!");
+                System.out.println("All animations and events finished at 7.0 seconds!");
+                animationManager.stop(); // Stop the animation manager
+            }));
+        } else {
+            /**
+             * This is a recreation of the grease up intro, but instead of using the libGDX version of the library, it uses swing
+             * (which is very sped)
+             * If you want to see this, scroll down to main function, and pass 69420 instead of 0
+             */
             panel.setBackground(new Color(0.15f, 0.15f, 0.2f, 1f));
 
             AnimatedPanel flash = new AnimatedPanel(Color.WHITE);
@@ -118,56 +167,12 @@ public class ExampleGUI extends JFrame {
                 animationManager.animateMove(allRoadsLeadToRome, allRoadsLeadToRome.getX() + 50, allRoadsLeadToRome.getY() + 10, 9999f * 3, AnimationManager.Easing.EASE_OSCILLATE_INFINITE);
                 animationManager.animateFade(focus, 1f, 9999f * 3, AnimationManager.Easing.EASE_OSCILLATE_INFINITE);
             }));
-        } else {
-            button = new JButton("Click me!");
-            button.setBounds(50, 50, 100, 30);
-            panel.add(button);
-
-            animatedPanel = new AnimatedPanel(Color.BLUE);
-            animatedPanel.setBounds(400, 200, 150, 100);
-            panel.add(animatedPanel);
-
-            // Animate the button after a delay
-            animationManager.getEventManager().addEvent(new Event(1f, () -> {
-                animationManager.animateMove(button, 250, 100, 2, AnimationManager.Easing.EASE_IN_OUT_CUBIC);
-            }));
-            /**
-             * This sets a function that triggers after triggerTime SECONDS (triggertime is a float, measured in seconds)
-             * eventManager automatically initializes WITH animationManager
-             */
-
-            // Animate the custom panel
-            animationManager.getEventManager().addEvent(new Event(0.5f, () -> animationManager.animateFade(animatedPanel, 0.0f, 1.5f, AnimationManager.Easing.EASE_IN_SINE)));
-            animationManager.getEventManager().addEvent(new Event(2.5f, () -> animationManager.animateFade(animatedPanel, 1.0f, 1.5f, AnimationManager.Easing.EASE_OUT_SINE)));
-            animationManager.getEventManager().addEvent(new Event(0.5f, () -> animationManager.animateRotation(animatedPanel, 360f, 4f, AnimationManager.Easing.EASE_IN_OUT_CUBIC)));
-            // Example of scaling: Make the panel grow and then shrink back.
-            // The scale parameter is a factor (e.g., 1.2 is 120%).
-            animationManager.getEventManager().addEvent(new Event(3f, () -> animationManager.animateScale(animatedPanel, 5f, 5f, 1f, AnimationManager.Easing.EASE_OUT_QUAD)));
-            animationManager.getEventManager().addEvent(new Event(5f, () -> animationManager.animateScale(animatedPanel, 0.2f, 0.2f, 1f, AnimationManager.Easing.EASE_IN_QUAD)));
-
-
-            // Add events to the EventManager
-            animationManager.getEventManager().addEvent(new Event(1.5f, () -> {
-                button.setText("Event 1 triggered!");
-                System.out.println("Event 1 triggered at 1.5 seconds!");
-            }));
-
-            animationManager.getEventManager().addEvent(new Event(3.5f, () -> {
-                button.setText("Event 2 triggered!");
-                System.out.println("Event 2 triggered at 3.5 seconds!");
-            }));
-
-            animationManager.getEventManager().addEvent(new Event(7.0f, () -> {
-                button.setText("Animation and Events done!");
-                System.out.println("All animations and events finished at 7.0 seconds!");
-                animationManager.stop(); // Stop the animation manager
-            }));
         }
     }
 
     public static void main(String[] args) {
         SwingUtilities.invokeLater(() -> {
-            ExampleGUI ex = new ExampleGUI(69420);
+            ExampleGUI ex = new ExampleGUI(0);
             ex.setVisible(true);
         });
     }
