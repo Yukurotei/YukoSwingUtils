@@ -33,15 +33,94 @@ public class ExampleGUI extends JFrame {
          */
 
         if (type == 69420) {
-            setBackground(new Color(0.15f*255, 0.15f*255, 0.2f*255, 1f));
-            AnimatedLabel focus = new AnimatedLabel();
-            focus.setIcon(new ImageIcon(Utils.resizeTo(new ImageIcon("./assets/whiteCirc.png").getImage(), 250)));
+            panel.setBackground(new Color(0.15f, 0.15f, 0.2f, 1f));
+
+            // Component Initialization (Converted from LibGDX)
+            // "focus" is now a white AnimatedPanel
+            AnimatedPanel focus = new AnimatedPanel(Color.WHITE);
+            focus.setBounds(-200, -200, 1200, 1000);
+            focus.putClientProperty("animation.opacity", 0f);
+            panel.add(focus);
+
+            JLabel gdxLogo = new JLabel(new ImageIcon("./assets/madeWLibGDX.png"));
+            //gdxLogo.setIcon(new ImageIcon("./assets/madeWLibGDX.png"));
+            gdxLogo.setBounds(0, 0, 454, 126);
+            System.out.printf("W: %s, H: %s%n", gdxLogo.getIcon().getIconWidth(), gdxLogo.getIcon().getIconWidth());
+            //gdxLogo.setOpacity(1f);
+            panel.add(gdxLogo);
+
+            AnimatedLabel allRoadsLeadToRome = new AnimatedLabel();
+            allRoadsLeadToRome.setIcon(new ImageIcon(new ImageIcon("./assets/time_ticking.png").getImage()));
+            allRoadsLeadToRome.setBounds(400 - allRoadsLeadToRome.getPreferredSize().width / 2 + 700, 300 - allRoadsLeadToRome.getPreferredSize().height / 2, allRoadsLeadToRome.getPreferredSize().width, allRoadsLeadToRome.getPreferredSize().height);
+            allRoadsLeadToRome.setOpacity(0f);
+            panel.add(allRoadsLeadToRome);
+
+            // Skipped "drink" sprite as "the_drink.png" asset is not available.
+
+            AnimatedLabel logo = new AnimatedLabel();
+            logo.setIcon(new ImageIcon(Utils.resizeTo(new ImageIcon("./assets/grease_up.png").getImage(), 120)));
+            logo.setBounds(400 - 120 / 2, 300 - 120 / 2 - 600, 120, 120);
+            panel.add(logo);
+
+            AnimatedLabel flash = new AnimatedLabel();
+            flash.setIcon(new ImageIcon(Utils.resizeTo(new ImageIcon("./assets/whiteCirc.png").getImage(), 200)));
+            flash.setBounds(400 - 200 / 2, 300 - 200 / 2, 200, 200);
+            flash.setOpacity(0f);
+            panel.add(flash);
+
+            ////////////
+            //CUTSCENE//
+            ////////////
+
+            // Sound: introSong = Gdx.audio.newMusic(Gdx.files.internal("audio/give-it-one.mp3"));
+            // Sound: introSong.setLooping(false);
+            // Sound: introSong.setVolume(1f);
+            // Sound: introSong.setPosition(2);
+
+            // Sound: bgm = Gdx.audio.newMusic(Gdx.files.internal("audio/elevator-music-fix.mp3"));
+            // Sound: bgm.setLooping(true);
+            // Sound: bgm.setVolume(0f);
+
+            animationManager.getEventManager().addEvent(new Event(1f, () -> {
+                animationManager.animateScale(gdxLogo, 10f, 10f, 8f, AnimationManager.Easing.EASE_IN_OUT_EXPO);
+                //animationManager.animateFade(gdxLogo, 1f, 5f, AnimationManager.Easing.EASE_IN_OUT_QUAD);
+                // Sound: introSong.play();
+            }));
+            animationManager.getEventManager().addEvent(new Event(3f, () -> {
+                animationManager.animateMove(logo, logo.getX(), logo.getY() + 600, 6f, AnimationManager.Easing.EASE_IN_OUT_ELASTIC);
+            }));
+            animationManager.getEventManager().addEvent(new Event(4.67f, () -> {
+                animationManager.animateFade(flash, 1f, 0.3f, AnimationManager.Easing.LINEAR);
+            }));
+            animationManager.getEventManager().addEvent(new Event(5f, () -> {
+                //animationManager.animateRotation(gdxLogo, 15f, 5f, AnimationManager.Easing.EASE_OUT_QUAD);
+                animationManager.animateMove(gdxLogo, gdxLogo.getX() - 200, gdxLogo.getY() + 150, 3f, AnimationManager.Easing.EASE_IN_OUT_CUBIC);
+                animationManager.animateFade(focus, 0.67f, 3f, AnimationManager.Easing.EASE_IN_OUT_EXPO);
+                animationManager.animateFade(allRoadsLeadToRome, 1f, 3f, AnimationManager.Easing.EASE_IN_OUT_EXPO);
+                animationManager.animateMove(allRoadsLeadToRome, allRoadsLeadToRome.getX() - 250, allRoadsLeadToRome.getY(), 3f, AnimationManager.Easing.EASE_IN_OUT_SINE);
+            }));
+            animationManager.getEventManager().addEvent(new Event(5.5f, () -> {
+                animationManager.animateFade(flash, 0f, 3f, AnimationManager.Easing.LINEAR);
+            }));
+            animationManager.getEventManager().addEvent(new Event(9f, () -> {
+                animationManager.animateScale(gdxLogo, 1f - 1f / 5f, 1f - 1f / 5f, 3f, AnimationManager.Easing.EASE_IN_OUT_EXPO);
+                animationManager.animateMove(logo, logo.getX() - 200, logo.getY() - 100, 3f, AnimationManager.Easing.EASE_IN_OUT_BACK);
+                animationManager.animateScale(logo, 1f - 1f / 5f, 1f - 1f / 5f, 3.5f, AnimationManager.Easing.EASE_IN_OUT_BACK);
+                // Skipped animating "drink" sprite.
+            }));
+            animationManager.getEventManager().addEvent(new Event(10f, () -> {
+                // Sound: introSong.setVolume(0.90f);
+                //animationManager.animateRotation(gdxLogo, 20f, 9999f * 3, AnimationManager.Easing.EASE_OSCILLATE_INFINITE);
+                animationManager.animateFade(logo, 0.5f, 9999f * 3, AnimationManager.Easing.EASE_OSCILLATE_INFINITE);
+                animationManager.animateMove(allRoadsLeadToRome, allRoadsLeadToRome.getX() + 50, allRoadsLeadToRome.getY() + 10, 9999f * 3, AnimationManager.Easing.EASE_OSCILLATE_INFINITE);
+                animationManager.animateFade(focus, 1f, 9999f * 3, AnimationManager.Easing.EASE_OSCILLATE_INFINITE);
+            }));
         } else {
             button = new JButton("Click me!");
             button.setBounds(50, 50, 100, 30);
             panel.add(button);
 
-            animatedPanel = new AnimatedPanel();
+            animatedPanel = new AnimatedPanel(Color.BLUE);
             animatedPanel.setBounds(400, 200, 150, 100);
             panel.add(animatedPanel);
 

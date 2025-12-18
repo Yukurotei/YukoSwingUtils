@@ -14,7 +14,12 @@ import java.awt.RenderingHints;
  */
 public class AnimatedPanel extends JPanel implements AnimatedJComponent {
 
-    public AnimatedPanel() {} //Just used as a 'marker' to mark components needed for manual rendering
+    private Color paintColor;
+    private boolean isActuallyOpaque;
+
+    public AnimatedPanel(Color paintColor) {
+        this.paintColor = paintColor;
+    }
 
     @Override
     protected void paintComponent(Graphics g) {
@@ -23,8 +28,7 @@ public class AnimatedPanel extends JPanel implements AnimatedJComponent {
         Graphics2D g2d = AnimatedJComponent.getAnimatedGraphics(this, g);
 
         //Draw
-        //TODO: CUSTOM COLOUR
-        g2d.setColor(Color.BLUE);
+        g2d.setColor(paintColor);
 
         int w = getWidth();
         int h = getHeight();
@@ -45,5 +49,26 @@ public class AnimatedPanel extends JPanel implements AnimatedJComponent {
 
         //Dispose graphics
         g2d.dispose();
+    }
+
+    @Override
+    public boolean isOpaque() {
+        return false;
+    }
+
+    public boolean isActuallyOpaque() {
+        return isActuallyOpaque;
+    }
+
+    public void setActuallyOpaque(boolean actuallyOpaque) {
+        isActuallyOpaque = actuallyOpaque;
+    }
+
+    public Color getPaintColor() {
+        return paintColor;
+    }
+
+    public void setPaintColor(Color paintColor) {
+        this.paintColor = paintColor;
     }
 }

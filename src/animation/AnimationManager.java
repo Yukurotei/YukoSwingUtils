@@ -148,13 +148,13 @@ public class AnimationManager {
      * @since 1.0.0
      * @author Yukurotei
      */
-    public void animateFade(JComponent target, float toOpacity, float duration, Easing easing) {
+    public void animateFade(AnimatedJComponent target, float toOpacity, float duration, Easing easing) {
         //Implemented with AlphaComposite
-        if (!(target instanceof AnimatedJComponent)) {
-            throw new IllegalArgumentException("target must be instance of AnimatedJComponent");
+        if (target == null) {
+            throw new IllegalArgumentException("target can not be null");
         }
         Animation anim = new Animation();
-        anim.initFade(target, toOpacity, duration, easing);
+        anim.initFade((JComponent) target, toOpacity, duration, easing);
         animations.add(anim);
     }
 
@@ -183,13 +183,13 @@ public class AnimationManager {
      * @since 1.0.0
      * @author Yukurotei
      */
-    public void animateRotation(JComponent target, float toRotationDegrees, float duration, Easing easing) {
+    public void animateRotation(AnimatedJComponent target, float toRotationDegrees, float duration, Easing easing) {
         //Graphics2D.rotate(), manual paint
-        if (!(target instanceof AnimatedJComponent)) {
-            throw new IllegalArgumentException("target must be instance of AnimatedJComponent");
+        if (target == null) {
+            throw new IllegalArgumentException("target can not be null");
         }
         Animation anim = new Animation();
-        anim.initRotation(target, toRotationDegrees, duration, easing);
+        anim.initRotation((JComponent) target, toRotationDegrees, duration, easing);
         animations.add(anim);
     }
 

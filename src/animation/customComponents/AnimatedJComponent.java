@@ -13,15 +13,28 @@ public interface AnimatedJComponent {
         Graphics2D g2d = (Graphics2D) g.create();
         g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 
-        Object opacity = component.getClientProperty("animation.opacity");
-        if (opacity instanceof Float) {
-            g2d.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, (Float) opacity));
-        }
+        Object opacityProp = component.getClientProperty("animation.opacity");
+        float opacity = (opacityProp instanceof Float) ? (Float) opacityProp : 1.0f;
 
+        //Clamp fade to be secure (cuz easing is sped sometimes)
+        opacity = Math.max(0.0f, Math.min(1.0f, opacity));
+        g2d.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, opacity));
+
+        //Apply rot
         Object rotation = component.getClientProperty("animation.rotation");
         if (rotation instanceof Float) {
             g2d.rotate((Float) rotation, component.getWidth() / 2.0, component.getHeight() / 2.0);
         }
+
         return g2d;
+    }
+
+    default float getOpacity() {
+        Object opacityProp = ((JComponent)this).getClientProperty("animation.opacity");
+        return (opacityProp instanceof Float) ? (Float) opacityProp : 1.0f;
+    }
+
+    default void setOpacity(float opacity) {
+        ((JComponent)this).putClientProperty("animation.opacity", 0f);
     }
 }
