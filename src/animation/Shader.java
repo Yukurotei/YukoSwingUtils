@@ -6,6 +6,11 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 
+/**
+ * Shaders (this made me go insane)
+ * @since 1.1.0
+ * @author MEME-KING16
+ */
 public class Shader extends JComponent implements AnimatedJComponent {
 
     private final JFrame frame;
@@ -24,6 +29,12 @@ public class Shader extends JComponent implements AnimatedJComponent {
 
     private final Timer timer;
 
+    /**
+     * Constructor
+     * @since 1.1.0
+     * @author MEME-KING16
+     * @param frame - your JFrame
+     */
     public Shader(JFrame frame) {
         this.frame = frame;
         setOpaque(false);
@@ -47,6 +58,14 @@ public class Shader extends JComponent implements AnimatedJComponent {
         timer.start();
     }
 
+    /**
+     * Apply a wave to the shader
+     * @since 1.1.0
+     * @author MEME-KING16
+     * @param amplitude - how far pixels move (ex 5. px shift left or right up to 5px)
+     * @param frequency - freq of the waves (low = wider and high = thiner)
+     * @param speed - speed of animation (0 = frozen)
+     */
     public void applyWave(float amplitude, float frequency, float speed) {
         this.waveEnabled = true;
         this.amplitude = amplitude;
@@ -55,21 +74,43 @@ public class Shader extends JComponent implements AnimatedJComponent {
         repaint();
     }
 
+    /**
+     * Clear any waves
+     * @since 1.1.0
+     * @author MEME-KING16
+     */
     public void clearWave() {
         this.waveEnabled = false;
         repaint();
     }
 
+    /**
+     * Add a color filter
+     * @since 1.1.0
+     * @author MEME-KING16
+     * @param color - the color (use rgba if you need opacity (see things) but rgb is fine (if you want a wall of that color))
+     */
     public void setColorFilter(Color color) {
         this.filterColor = color;
         repaint();
     }
 
+    /**
+     * Add an alpha filter
+     * @since 1.1.0
+     * @author MEME-KING16
+     * @param alpha - the alpha (0-255)
+     */
     public void setAlpha(int alpha) {
         this.opacity = Math.max(0, Math.min(255, alpha)) / 255f;
         repaint();
     }
 
+    /**
+     * Remove the shader
+     * @since 1.1.0
+     * @author MEME-KING16
+     */
     public void remove() {
         timer.stop();
         frame.getLayeredPane().remove(this);
@@ -97,7 +138,7 @@ public class Shader extends JComponent implements AnimatedJComponent {
         g2d.dispose();
     }
 
-    //cap frame
+    //capt frame
     private BufferedImage captureFrame() {
         int w = frame.getWidth();
         int h = frame.getHeight();
