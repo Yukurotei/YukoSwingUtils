@@ -128,7 +128,7 @@ public class Shader extends JComponent implements AnimatedJComponent {
         g2d.setComposite(AlphaComposite.SrcOver.derive(opacity));
         g2d.drawImage(result, 0, 0, null);
 
-        // color filter overlay (like your original)
+        // color filter
         if (filterColor.getAlpha() > 0) {
             g2d.setComposite(AlphaComposite.SrcOver);
             g2d.setColor(filterColor);
