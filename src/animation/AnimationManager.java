@@ -3,9 +3,9 @@ package animation;
 import animation.customComponents.AnimatedJComponent;
 
 import javax.swing.*;
+import javax.swing.Timer;
 import java.awt.Dimension;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 /**
@@ -113,13 +113,73 @@ public class AnimationManager {
 
         List<Animation> currentAnimations = new ArrayList<>(animations);
 
+        //group anims together by component (I LOVE HASH MAP)
+        Map<JComponent, List<Animation>> animationsByTarget = new HashMap<>();
         for (Animation anim : currentAnimations) {
-            if (anim.isFinished()) {
-                animations.remove(anim);
-            } else {
-                anim.update(delta);
+            if (!anim.isFinished()) {
+                animationsByTarget.computeIfAbsent(anim.getTarget(), k -> new ArrayList<>()).add(anim);
             }
         }
+
+        //iterate through and apply all anims at the same time to resolve conflicts
+        for (Map.Entry<JComponent, List<Animation>> entry : animationsByTarget.entrySet()) {
+            JComponent target = entry.getKey();
+            List<Animation> targetAnims = entry.getValue();
+
+            // Update all animations and collect their results
+            Float finalX = null, finalY = null;
+            Integer finalWidth = null, finalHeight = null;
+            Float finalOpacity = null;
+            Float finalRotation = null;
+
+            for (Animation anim : targetAnims) {
+                anim.updateInternal(delta);
+
+                AnimationState state = anim.getCurrentState();
+                if (state.hasPosition) {
+                    finalX = state.x;
+                    finalY = state.y;
+                }
+                if (state.hasSize) {
+                    finalWidth = state.width;
+                    finalHeight = state.height;
+                }
+                if (state.hasOpacity) {
+                    finalOpacity = state.opacity;
+                }
+                if (state.hasRotation) {
+                    finalRotation = state.rotation;
+                }
+            }
+
+            //apply all change
+            if (finalWidth != null) {
+                if (finalX != null) {
+                    target.setBounds(finalX.intValue(), finalY.intValue(), finalWidth, finalHeight);
+                } else {
+                    target.setSize(finalWidth, finalHeight);
+                }
+            } else if (finalX != null) {
+                target.setLocation(finalX.intValue(), finalY.intValue());
+            }
+
+            if (finalOpacity != null) {
+                target.putClientProperty("animation.opacity", finalOpacity);
+                target.repaint();
+            }
+
+            if (finalRotation != null) {
+                target.putClientProperty("animation.rotation", finalRotation);
+                if (target.getParent() != null) {
+                    target.getParent().repaint();
+                } else {
+                    target.repaint();
+                }
+            }
+        }
+
+        currentAnimations.stream().filter(Animation::isFinished).forEach(animations::remove);
+
         eventManager.update(currentTotalTime);
     }
 
@@ -203,8 +263,27 @@ public class AnimationManager {
         return eventManager;
     }
 
+    private static class AnimationState {
+        boolean hasPosition = false;
+        float x, y;
+
+        boolean hasSize = false;
+        int width, height;
+
+        boolean hasOpacity = false;
+        float opacity;
+
+        boolean hasRotation = false;
+        float rotation;
+    }
+
     private static class Animation {
+        private enum AnimationType {
+            MOVE, SCALE, FADE, ROTATION
+        }
+
         private JComponent target;
+        private AnimationType type;
         private Easing easing;
         private float duration;
         private float time;
@@ -215,6 +294,7 @@ public class AnimationManager {
 
         //Scale
         private Dimension startSize;
+        private float startCenterX, startCenterY; // Store center point for scale
         private float toScaleX, toScaleY;
 
         //Opacity
@@ -225,9 +305,13 @@ public class AnimationManager {
         private float startRotation;
         private float toRotation;
 
+        public JComponent getTarget() {
+            return target;
+        }
 
         public void initMove(JComponent target, float toX, float toY, float duration, Easing easing) {
             this.target = target;
+            this.type = AnimationType.MOVE;
             this.duration = duration;
             this.easing = easing;
             this.time = 0;
@@ -236,33 +320,25 @@ public class AnimationManager {
             this.startY = target.getY();
             this.toX = toX;
             this.toY = toY;
-
-            this.toScaleX = Float.NaN;
-            this.toScaleY = Float.NaN;
-            this.toOpacity = Float.NaN;
-            this.toRotation = Float.NaN;
         }
 
         public void initScale(JComponent target, float toScaleX, float toScaleY, float duration, Easing easing) {
             this.target = target;
+            this.type = AnimationType.SCALE;
             this.duration = duration;
             this.easing = easing;
             this.time = 0;
 
-            this.startX = target.getX();
-            this.startY = target.getY();
             this.startSize = target.getSize();
+            this.startCenterX = target.getX() + target.getWidth() / 2.0f;
+            this.startCenterY = target.getY() + target.getHeight() / 2.0f;
             this.toScaleX = toScaleX;
             this.toScaleY = toScaleY;
-
-            this.toX = Float.NaN;
-            this.toY = Float.NaN;
-            this.toOpacity = Float.NaN;
-            this.toRotation = Float.NaN;
         }
 
         public void initFade(JComponent target, float toOpacity, float duration, Easing easing) {
             this.target = target;
+            this.type = AnimationType.FADE;
             this.duration = duration;
             this.easing = easing;
             this.time = 0;
@@ -270,16 +346,11 @@ public class AnimationManager {
             Object prop = target.getClientProperty("animation.opacity");
             this.startOpacity = (prop instanceof Float) ? (Float) prop : 1f;
             this.toOpacity = toOpacity;
-
-            this.toX = Float.NaN;
-            this.toY = Float.NaN;
-            this.toScaleX = Float.NaN;
-            this.toScaleY = Float.NaN;
-            this.toRotation = Float.NaN;
         }
 
         public void initRotation(JComponent target, float toRotationDegrees, float duration, Easing easing) {
             this.target = target;
+            this.type = AnimationType.ROTATION;
             this.duration = duration;
             this.easing = easing;
             this.time = 0;
@@ -288,69 +359,65 @@ public class AnimationManager {
             this.startRotation = (prop instanceof Float) ? (Float) prop : 0f;
             this.toRotation = (float) Math.toRadians(toRotationDegrees);
 
-            this.toX = Float.NaN;
-            this.toY = Float.NaN;
-            this.toScaleX = Float.NaN;
-            this.toScaleY = Float.NaN;
-            this.toOpacity = Float.NaN;
+            this.startCenterX = target.getX() + target.getWidth() / 2.0f;
+            this.startCenterY = target.getY() + target.getHeight() / 2.0f;
+            this.startSize = target.getSize();
         }
 
-        public void update(float delta) {
+        public void updateInternal(float delta) {
             if (isFinished()) return;
 
             time += delta;
+            if (time > duration) time = duration;
+        }
+
+        public AnimationState getCurrentState() {
+            AnimationState state = new AnimationState();
+
             float progress = Math.min(1f, time / duration);
             float easedProgress = applyEasing(progress);
 
-            if (!Float.isNaN(toX)) {
-                float newX = startX + (toX - startX) * easedProgress;
-                target.setLocation((int) newX, target.getY());
-            }
-            if (!Float.isNaN(toY)) {
-                float newY = startY + (toY - startY) * easedProgress;
-                target.setLocation(target.getX(), (int) newY);
-            }
+            switch (type) {
+                case MOVE:
+                    state.hasPosition = true;
+                    state.x = startX + (toX - startX) * easedProgress;
+                    state.y = startY + (toY - startY) * easedProgress;
+                    break;
 
-            if (!Float.isNaN(toScaleX) || !Float.isNaN(toScaleY)) {
-                float currentScaleX = 1.0f;
-                if (!Float.isNaN(toScaleX)) {
-                    currentScaleX = 1.0f + (toScaleX - 1.0f) * easedProgress;
-                }
-                int newWidth = (int) (startSize.width * currentScaleX);
+                case SCALE:
+                    float currentScaleX = 1.0f + (toScaleX - 1.0f) * easedProgress;
+                    float currentScaleY = 1.0f + (toScaleY - 1.0f) * easedProgress;
 
-                float currentScaleY = 1.0f;
-                if (!Float.isNaN(toScaleY)) {
-                    currentScaleY = 1.0f + (toScaleY - 1.0f) * easedProgress;
-                }
-                int newHeight = (int) (startSize.height * currentScaleY);
+                    int newWidth = (int) (startSize.width * currentScaleX);
+                    int newHeight = (int) (startSize.height * currentScaleY);
 
-                //adjust position to keep the component centered
-                int newX = (int) (startX + (startSize.width - newWidth) / 2.0f);
-                int newY = (int) (startY + (startSize.height - newHeight) / 2.0f);
+                    float newX = startCenterX - newWidth / 2.0f;
+                    float newY = startCenterY - newHeight / 2.0f;
 
-                target.setBounds(newX, newY, newWidth, newHeight);
-            }
+                    state.hasPosition = true;
+                    state.x = newX;
+                    state.y = newY;
+                    state.hasSize = true;
+                    state.width = newWidth;
+                    state.height = newHeight;
+                    break;
 
-            if (!Float.isNaN(toOpacity)) {
-                float newOpacity = startOpacity + (toOpacity - startOpacity) * easedProgress;
-                target.putClientProperty("animation.opacity", newOpacity);
-                target.repaint();
-            }
+                case FADE:
+                    state.hasOpacity = true;
+                    state.opacity = startOpacity + (toOpacity - startOpacity) * easedProgress;
+                    break;
 
-            if (!Float.isNaN(toRotation)) {
-                float newRotation = startRotation + (toRotation - startRotation) * easedProgress;
-                target.putClientProperty("animation.rotation", newRotation);
-                if (target.getParent() != null) {
-                    //repaint the parent to clean up ghost pixels
-                    target.getParent().repaint();
-                } else {
-                    target.repaint();
-                }
+                case ROTATION:
+                    state.hasRotation = true;
+                    state.rotation = startRotation + (toRotation - startRotation) * easedProgress;
+
+                    state.hasPosition = true;
+                    state.x = startCenterX - startSize.width / 2.0f;
+                    state.y = startCenterY - startSize.height / 2.0f;
+                    break;
             }
 
-            if (progress >= 1f) {
-                time = duration;
-            }
+            return state;
         }
 
         public boolean isFinished() {

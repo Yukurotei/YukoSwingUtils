@@ -37,13 +37,16 @@ public class ExampleGUI extends JFrame {
         if (type == 69420) {
             panel.setBackground(new Color(0.15f, 0.15f, 0.2f, 1f));
 
+            AnimatedPanel flash = new AnimatedPanel(Color.WHITE);
+            flash.setBounds(0, 0, 800, 600);
+            flash.setOpacity(0f);
+            panel.add(flash);
+
             AnimatedLabel focus = new AnimatedLabel();
             int scaledWidth = (int)(589 * 2.1);
             int scaledHeight = (int)(295 * 2.1);
 
-            focus.setIcon(new ImageIcon(Utils.resizeTo(
-                    new ImageIcon(Objects.requireNonNull(ExampleGUI.class.getResource("/assets/focus.png"))).getImage(),
-                    scaledWidth, scaledHeight)));
+            focus.setIcon(new ImageIcon(Utils.resizeTo(new ImageIcon(Objects.requireNonNull(ExampleGUI.class.getResource("/assets/focus.png"))).getImage(), scaledWidth, scaledHeight)));
 
             focus.setBounds(400 - scaledWidth / 2, 300 - scaledHeight / 2, scaledWidth, scaledHeight);
             focus.setOpacity(0f);
@@ -65,14 +68,10 @@ public class ExampleGUI extends JFrame {
             panel.add(allRoadsLeadToRome);
 
             AnimatedLabel logo = new AnimatedLabel();
-            logo.setIcon(new ImageIcon(Utils.resizeTo(new ImageIcon(Objects.requireNonNull(ExampleGUI.class.getResource("/assets/grease_up.png"))).getImage(), 120)));
-            logo.setBounds(400 - 120 / 2, 300 - 120 / 2 - 600, 120, 120);
+            logo.setIcon(new ImageIcon(Utils.resizeTo(new ImageIcon(Objects.requireNonNull(ExampleGUI.class.getResource("/assets/grease_up.png"))).getImage(), 120.0)));
+            logo.setBounds(400 - 500 / 2, 300 - 120 / 2 - 600, 500, 400);
+            logo.setName("Logo");
             panel.add(logo);
-
-            AnimatedPanel flash = new AnimatedPanel(Color.WHITE);
-            flash.setBounds(0, 0, 800, 600);
-            flash.setOpacity(0f);
-            panel.add(flash);
 
             ////////////
             //CUTSCENE//
@@ -93,14 +92,14 @@ public class ExampleGUI extends JFrame {
                 // Sound: introSong.play();
             }));
             animationManager.getEventManager().addEvent(new Event(3f, () -> {
-                animationManager.animateMove(logo, logo.getX(), logo.getY() + 600, 6f, AnimationManager.Easing.EASE_IN_OUT_ELASTIC);
+                animationManager.animateMove(logo, logo.getX(), logo.getY() + 500, 6f, AnimationManager.Easing.EASE_IN_OUT_ELASTIC);
             }));
             animationManager.getEventManager().addEvent(new Event(4.67f, () -> {
                 animationManager.animateFade(flash, 1f, 0.3f, AnimationManager.Easing.LINEAR);
             }));
             animationManager.getEventManager().addEvent(new Event(5f, () -> {
                 animationManager.animateRotation(gdxLogo, -15f, 5f, AnimationManager.Easing.EASE_OUT_QUAD);
-                animationManager.animateMove(gdxLogo, gdxLogo.getX() - 300, gdxLogo.getY() - 150, 5f, AnimationManager.Easing.EASE_IN_OUT_CUBIC);
+                animationManager.animateMove(gdxLogo, gdxLogo.getX() - 350, gdxLogo.getY() - 150, 5f, AnimationManager.Easing.EASE_IN_OUT_QUART);
                 animationManager.animateFade(focus, 0.67f, 3f, AnimationManager.Easing.EASE_IN_OUT_EXPO);
                 animationManager.animateFade(allRoadsLeadToRome, 1f, 3f, AnimationManager.Easing.EASE_IN_OUT_EXPO);
                 animationManager.animateMove(allRoadsLeadToRome, allRoadsLeadToRome.getX() - 250, allRoadsLeadToRome.getY(), 3f, AnimationManager.Easing.EASE_IN_OUT_SINE);
@@ -110,12 +109,10 @@ public class ExampleGUI extends JFrame {
             }));
             animationManager.getEventManager().addEvent(new Event(9f, () -> {
                 animationManager.animateScale(gdxLogo, 1f - 1f / 5f, 1f - 1f / 5f, 3f, AnimationManager.Easing.EASE_IN_OUT_EXPO);
-                animationManager.animateMove(logo, logo.getX() - 200, logo.getY() - 100, 3f, AnimationManager.Easing.EASE_IN_OUT_BACK);
-                animationManager.animateScale(logo, 1f - 1f / 5f, 1f - 1f / 5f, 3.5f, AnimationManager.Easing.EASE_IN_OUT_BACK);
-                // Skipped animating "drink" sprite.
+                animationManager.animateScale(logo, 1f - 1f / 5f, 1f - 1f / 5f, 3f, AnimationManager.Easing.EASE_IN_OUT_BACK);
+                animationManager.animateMove(logo, logo.getX() - 150, logo.getY() + 100, 3.1f, AnimationManager.Easing.EASE_IN_OUT_BACK);
             }));
             animationManager.getEventManager().addEvent(new Event(10f, () -> {
-                // Sound: introSong.setVolume(0.90f);
                 animationManager.animateRotation(gdxLogo, -20f, 9999f * 3, AnimationManager.Easing.EASE_OSCILLATE_INFINITE);
                 animationManager.animateFade(logo, 0.5f, 9999f * 3, AnimationManager.Easing.EASE_OSCILLATE_INFINITE);
                 animationManager.animateMove(allRoadsLeadToRome, allRoadsLeadToRome.getX() + 50, allRoadsLeadToRome.getY() + 10, 9999f * 3, AnimationManager.Easing.EASE_OSCILLATE_INFINITE);
