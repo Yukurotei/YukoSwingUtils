@@ -103,7 +103,7 @@ public class ExampleGUI extends JFrame {
 
             AnimatedLabel gdxLogo = new AnimatedLabel();
             gdxLogo.setIcon(new ImageIcon(Utils.resizeTo(
-                    new ImageIcon(Objects.requireNonNull(ExampleGUI.class.getResource("/assets/madeWLibGDX.png"))).getImage(),
+                    new ImageIcon(Objects.requireNonNull(ExampleGUI.class.getResource("/assets/madeWSwing.png"))).getImage(),
                     100.0)));
             gdxLogo.setBounds(400 - 454 / 2, 300 - 126 / 2, 454, 126);
             gdxLogo.setOpacity(0f);
@@ -172,7 +172,7 @@ public class ExampleGUI extends JFrame {
 
     public static void main(String[] args) {
         SwingUtilities.invokeLater(() -> {
-            ExampleGUI ex = new ExampleGUI(0);
+            ExampleGUI ex = new ExampleGUI(69420);
             ex.setVisible(true);
         });
     }
