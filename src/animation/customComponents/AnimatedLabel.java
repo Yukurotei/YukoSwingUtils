@@ -18,10 +18,12 @@ public class AnimatedLabel extends JLabel implements AnimatedJComponent {
 
     public AnimatedLabel(String text) {
         super(text);
+        setOpaque(false);
     }
 
     public AnimatedLabel() {
         super();
+        setOpaque(false);
     }
 
     @Override
@@ -38,33 +40,47 @@ public class AnimatedLabel extends JLabel implements AnimatedJComponent {
     protected void paintComponent(Graphics g) {
         Graphics2D g2d = AnimatedJComponent.getAnimatedGraphics(this, g);
 
+        //remove clipping (HOLY THIS EXISTS?!?!?!)
+        g2d.setClip(null);
+
         if (originalImage != null) {
-            // Using a padding factor allows for rotation without clipping.
-            // The image is scaled to fit within 80% of the component's bounds.
-            float padding = 0.8f;
+            //Only do rotation calculation if rotation isn't 0, since if we're not rotating it's not needed
+            if (getRotation() != 0) {
+                //preserve aspect ratio
+                int compWidth = getWidth();
+                int compHeight = getHeight();
 
-            int compWidth = (int) (getWidth() * padding);
-            int compHeight = (int) (getHeight() * padding);
+                int imgWidth = originalImage.getWidth(null);
+                int imgHeight = originalImage.getHeight(null);
 
-            int imgWidth = originalImage.getWidth(null);
-            int imgHeight = originalImage.getHeight(null);
-            float imgAspect = (float) imgWidth / imgHeight;
+                //prevent improper div when below or = 0
+                if (imgWidth <= 0 || imgHeight <= 0) {
+                    super.paintComponent(g2d);
+                    g2d.dispose();
+                    return;
+                }
 
-            // Calculate the new image size, preserving aspect ratio, to fit within the padded component bounds
-            int newImgWidth = compWidth;
-            int newImgHeight = (int) (newImgWidth / imgAspect);
+                float imgAspect = (float) imgWidth / imgHeight;
+                float compAspect = (float) compWidth / compHeight;
 
-            if (newImgHeight > compHeight) {
-                newImgHeight = compHeight;
-                newImgWidth = (int) (newImgHeight * imgAspect);
+                int newImgWidth;
+                int newImgHeight;
+                if (imgAspect > compAspect) {
+                    newImgWidth = compWidth;
+                    newImgHeight = (int) (newImgWidth / imgAspect);
+                } else {
+                    newImgHeight = compHeight;
+                    newImgWidth = (int) (newImgHeight * imgAspect);
+                }
+
+                //center
+                int x = (compWidth - newImgWidth) / 2;
+                int y = (compHeight - newImgHeight) / 2;
+
+                g2d.drawImage(originalImage, x, y, newImgWidth, newImgHeight, this);
+            } else {
+                g2d.drawImage(originalImage, 0, 0, getWidth(), getHeight(), this);
             }
-
-            // Center the resized image within the original component bounds
-            int x = (getWidth() - newImgWidth) / 2;
-            int y = (getHeight() - newImgHeight) / 2;
-
-            g2d.drawImage(originalImage, x, y, newImgWidth, newImgHeight, this);
-
         } else {
             super.paintComponent(g2d);
         }

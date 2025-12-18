@@ -340,7 +340,12 @@ public class AnimationManager {
             if (!Float.isNaN(toRotation)) {
                 float newRotation = startRotation + (toRotation - startRotation) * easedProgress;
                 target.putClientProperty("animation.rotation", newRotation);
-                target.repaint();
+                if (target.getParent() != null) {
+                    //repaint the parent to clean up ghost pixels
+                    target.getParent().repaint();
+                } else {
+                    target.repaint();
+                }
             }
 
             if (progress >= 1f) {

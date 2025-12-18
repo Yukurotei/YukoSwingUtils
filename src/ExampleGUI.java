@@ -27,10 +27,11 @@ public class ExampleGUI extends JFrame {
         JPanel panel = new JPanel(null); // Using null layout for manual positioning
         add(panel);
 
-        animationManager = new AnimationManager(0); // Initialize AnimationManager with a custom update interval
+        animationManager = new AnimationManager(5); // Initialize AnimationManager with a custom update interval
         /**
          * The update interval represents how many milliseconds it waits to update all animations again
          * Generally lower value is smoother, but consumes more resources. Don't set to negative
+         * Zero is basically "run as fast as you can"
          */
 
         if (type == 69420) {
@@ -98,8 +99,8 @@ public class ExampleGUI extends JFrame {
                 animationManager.animateFade(flash, 1f, 0.3f, AnimationManager.Easing.LINEAR);
             }));
             animationManager.getEventManager().addEvent(new Event(5f, () -> {
-                animationManager.animateRotation(gdxLogo, 15f, 5f, AnimationManager.Easing.EASE_OUT_QUAD);
-                animationManager.animateMove(gdxLogo, gdxLogo.getX() - 200, gdxLogo.getY() + 150, 3f, AnimationManager.Easing.EASE_IN_OUT_CUBIC);
+                animationManager.animateRotation(gdxLogo, -15f, 5f, AnimationManager.Easing.EASE_OUT_QUAD);
+                animationManager.animateMove(gdxLogo, gdxLogo.getX() - 300, gdxLogo.getY() - 150, 5f, AnimationManager.Easing.EASE_IN_OUT_CUBIC);
                 animationManager.animateFade(focus, 0.67f, 3f, AnimationManager.Easing.EASE_IN_OUT_EXPO);
                 animationManager.animateFade(allRoadsLeadToRome, 1f, 3f, AnimationManager.Easing.EASE_IN_OUT_EXPO);
                 animationManager.animateMove(allRoadsLeadToRome, allRoadsLeadToRome.getX() - 250, allRoadsLeadToRome.getY(), 3f, AnimationManager.Easing.EASE_IN_OUT_SINE);
@@ -115,7 +116,7 @@ public class ExampleGUI extends JFrame {
             }));
             animationManager.getEventManager().addEvent(new Event(10f, () -> {
                 // Sound: introSong.setVolume(0.90f);
-                animationManager.animateRotation(gdxLogo, 20f, 9999f * 3, AnimationManager.Easing.EASE_OSCILLATE_INFINITE);
+                animationManager.animateRotation(gdxLogo, -20f, 9999f * 3, AnimationManager.Easing.EASE_OSCILLATE_INFINITE);
                 animationManager.animateFade(logo, 0.5f, 9999f * 3, AnimationManager.Easing.EASE_OSCILLATE_INFINITE);
                 animationManager.animateMove(allRoadsLeadToRome, allRoadsLeadToRome.getX() + 50, allRoadsLeadToRome.getY() + 10, 9999f * 3, AnimationManager.Easing.EASE_OSCILLATE_INFINITE);
                 animationManager.animateFade(focus, 1f, 9999f * 3, AnimationManager.Easing.EASE_OSCILLATE_INFINITE);
