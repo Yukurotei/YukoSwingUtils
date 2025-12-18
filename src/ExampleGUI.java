@@ -36,7 +36,8 @@ public class ExampleGUI extends JFrame {
         animatedPanel.setBounds(400, 200, 150, 100);
         panel.add(animatedPanel);
             Shader shader = new Shader(this);
-            shader.setColorFilter(new Color(255, 0, 0, 100));
+            shader.applyWave(1, 1, 3);;
+            shader.setColorFilter(new Color(0, 255, 255, 50));
 
 
 
